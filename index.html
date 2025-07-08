@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TD Confeitaria - Cardápio</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff0f6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #ff4db8;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+    }
+    img.logo {
+      width: 120px;
+      border-radius: 50%;
+      margin-top: 1rem;
+    }
+    form {
+      max-width: 700px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #ff4db8;
+    }
+    label {
+      display: block;
+      margin: 0.5rem 0 0.2rem;
+    }
+    input[type=text], input[type=number] {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .produto {
+      border: 1px solid #ddd;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border-radius: 5px;
+    }
+    .total {
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #e60073;
+      margin: 1rem 0;
+    }
+    button {
+      background-color: #ff4db8;
+      color: white;
+      padding: 0.75rem 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="logo.jpeg" alt="TD Confeitaria" class="logo">
+    <h1>Cardápio TD Confeitaria</h1>
+  </header>
+
+  <form id="formulario">
+    <h2>Seus dados</h2>
+    <label>Nome</label><input type="text" id="nome" required>
+    <label>Rua, número, complemento</label><input type="text" id="endereco" required>
+    <label>CEP</label><input type="text" id="cep" required>
+    <label>Telefone para contato</label><input type="text" id="contato" required>
+
+    <h2>Escolha seus produtos</h2>
+
+    <div class="produto">
+      <label><input type="checkbox" class="item" data-nome="Copo Ninhotella" data-preco="22"> Copo Ninhotella (R$22)</label>
+      <label><input type="checkbox" class="item" data-nome="Adicional Nutella" data-preco="15"> + Nutella (R$15)</label>
+    </div>
+
+    <div class="produto">
+      <label><input type="checkbox" class="item" data-nome="Bolo Piscininha Choconinho" data-preco="35"> Bolo Piscininha Choconinho (R$35)</label>
+      <label><input type="checkbox" class="item" data-nome="Adicional Morango" data-preco="10"> + Morango (R$10)</label>
+    </div>
+
+    <div class="total">Total: R$<span id="total">0</span></div>
+
+    <button type="button" onclick="enviarPedido()">Enviar pedido pelo WhatsApp</button>
+  </form>
+
+  <script>
+    const checkboxes = document.querySelectorAll('.item');
+    const totalSpan = document.getElementById('total');
+    let total = 0;
+
+    checkboxes.forEach(c => c.addEventListener('change', () => {
+      const preco = parseFloat(c.dataset.preco);
+      total += c.checked ? preco : -preco;
+      totalSpan.textContent = total.toFixed(2);
+    }));
+
+    function enviarPedido() {
+      const nome = document.getElementById('nome').value;
+      const endereco = document.getElementById('endereco').value;
+      const cep = document.getElementById('cep').value;
+      const contato = document.getElementById('contato').value;
+
+      let mensagem = `Pedido TD Confeitaria%0A`;
+      mensagem += `Nome: ${nome}%0A`;
+      mensagem += `Endereço: ${endereco} - CEP: ${cep}%0A`;
+      mensagem += `Contato: ${contato}%0A%0AProdutos:%0A`;
+
+      checkboxes.forEach(c => {
+        if (c.checked) mensagem += `- ${c.dataset.nome} (R$${parseFloat(c.dataset.preco).toFixed(2)})%0A`;
+      });
+
+      mensagem += `%0ATotal: R$${total.toFixed(2)}`;
+
+      const telefone = '5511995726813';
+      const url = `https://wa.me/${telefone}?text=${mensagem}`;
+      window.open(url, '_blank');
+    }
+  </script>
+</body>
+</html>
