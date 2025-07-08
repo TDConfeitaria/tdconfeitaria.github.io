@@ -8,9 +8,7 @@
   <link rel="manifest" href="manifest.json">
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('Service Worker registrado'))
-        .catch(error => console.log('Erro ao registrar SW:', error));
+      navigator.serviceWorker.register('service-worker.js');
     }
   </script>
   <style>
@@ -30,11 +28,12 @@
     <p>Monte seu pedido com praticidade 🍰</p>
   </header>
 
-  <h2>Selecione os produtos:</h2>
+  <h2>Cardápio</h2>
+
   <div class="produto">
-    <label><input type="checkbox" class="item" data-nome="Piscininha Choconinho" data-valor="35"> Piscininha Choconinho - R$35,00</label>
-    <label><input type="checkbox" class="adicional" data-parent="Piscininha Choconinho" data-nome="Morango" data-valor="10"> + Morango (+R$10,00)</label>
-    <label><input type="checkbox" class="adicional" data-parent="Piscininha Choconinho" data-nome="Nutella extra" data-valor="15"> + Nutella extra (+R$15,00)</label>
+    <label><input type="checkbox" class="item" data-nome="Bolo Piscininha - Choconinho" data-valor="35"> Bolo Piscininha - Choconinho - R$35,00</label>
+    <label><input type="checkbox" class="adicional" data-parent="Bolo Piscininha - Choconinho" data-nome="Morango" data-valor="10"> + Morango (+R$10,00)</label>
+    <label><input type="checkbox" class="adicional" data-parent="Bolo Piscininha - Choconinho" data-nome="Nutella extra" data-valor="15"> + Nutella extra (+R$15,00)</label>
   </div>
 
   <div class="produto">
@@ -49,7 +48,7 @@
     <h2>Seus dados:</h2>
     <label>Nome:</label>
     <input type="text" id="nome" required>
-    <label>Telefone para contato:</label>
+    <label>Telefone:</label>
     <input type="text" id="telefone" required>
     <label>CEP:</label>
     <input type="text" id="cep" maxlength="8" onblur="buscarEndereco()">
@@ -69,15 +68,15 @@
       <option value="Cartão de Crédito">Cartão de Crédito</option>
       <option value="Cartão de Débito">Cartão de Débito</option>
     </select>
-    <button onclick="enviarPedido()">Enviar pedido no WhatsApp</button>
+    <button onclick="enviarPedido()">Enviar para WhatsApp</button>
   </div>
 
   <script>
     function buscarEndereco() {
       const cep = document.getElementById("cep").value;
       if (cep.length !== 8) return;
-      fetch(`https://viacep.com.br/ws/${cep}/json/`)
-        .then(res => res.json())
+      fetch("https://viacep.com.br/ws/" + cep + "/json/")
+        .then(response => response.json())
         .then(data => {
           document.getElementById("rua").value = data.logradouro || "";
           document.getElementById("bairro").value = data.bairro || "";
@@ -100,26 +99,26 @@
       let itens = [];
 
       document.querySelectorAll(".item:checked").forEach(item => {
-        const nome = item.dataset.nome;
-        const valor = parseFloat(item.dataset.valor);
-        total += valor;
+        const nomeItem = item.dataset.nome;
+        const valorItem = parseFloat(item.dataset.valor);
+        total += valorItem;
         let adicionais = [];
-        document.querySelectorAll(`.adicional[data-parent="${nome}"]:checked`).forEach(ad => {
+        document.querySelectorAll(`.adicional[data-parent="${nomeItem}"]:checked`).forEach(ad => {
           adicionais.push(ad.dataset.nome);
           total += parseFloat(ad.dataset.valor);
         });
-        itens.push(`${nome}${adicionais.length ? " + " + adicionais.join(", ") : ""}`);
+        itens.push(`${nomeItem}${adicionais.length ? " + " + adicionais.join(", ") : ""}`);
       });
 
       if (!nome || !telefone || !cep || !numero) {
-        alert("Por favor, preencha todos os campos obrigatórios.");
+        alert("Preencha todos os campos obrigatórios!");
         return;
       }
 
-      const msg = `Olá! Gostaria de fazer um pedido na TD Confeitaria:%0A
+      const msg = `Olá! Gostaria de fazer um pedido:%0A
 *Nome:* ${nome}%0A
-*Contato:* ${telefone}%0A
-*Endereço:* ${rua}, ${numero} ${complemento ? '- ' + complemento : ''}, ${bairro}, ${cidade}, CEP ${cep}%0A
+*Telefone:* ${telefone}%0A
+*Endereço:* ${rua}, ${numero} ${complemento}, ${bairro}, ${cidade}, CEP: ${cep}%0A
 *Forma de pagamento:* ${pagamento}%0A
 *Itens:* ${itens.join(" | ")}%0A
 *Total:* R$${total.toFixed(2).replace(".", ",")}`;
