@@ -9,122 +9,122 @@
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('Service Worker registrado com sucesso'))
-        .catch(error => console.log('Erro ao registrar Service Worker:', error));
+        .then(() => console.log('Service Worker registrado'))
+        .catch(error => console.log('Erro ao registrar SW:', error));
     }
   </script>
   <style>
-    body { font-family: Arial, sans-serif; background: #fff0f6; margin: 0; padding: 1rem; }
+    body { font-family: Arial; background: #fff0f6; padding: 1rem; margin: 0; }
     header { background: #d60087; color: white; padding: 1rem; text-align: center; }
-    .tabs { display: flex; flex-wrap: wrap; justify-content: center; margin-top: 1rem; }
-    .tab { background: #ffb3da; margin: 0.3rem; padding: 0.5rem 1rem; cursor: pointer; border-radius: 8px; }
-    .tab.active { background: #d60087; color: white; }
-    .content { display: none; padding: 1rem; }
-    .content.active { display: block; }
-    .produto { background: white; margin-bottom: 0.8rem; padding: 1rem; border-radius: 10px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
-    .form { margin-top: 2rem; }
-    input, select { padding: 0.5rem; margin-top: 0.3rem; width: 100%; border-radius: 6px; border: 1px solid #ccc; }
-    button { margin-top: 1rem; padding: 0.7rem 1.5rem; background: #d60087; color: white; border: none; border-radius: 8px; cursor: pointer; width: 100%; }
-    .alerta { margin-top: 1rem; color: red; font-weight: bold; text-align: center; }
+    h2 { color: #d60087; }
+    .produto { background: white; padding: 1rem; margin: 1rem 0; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    label, input, select, textarea { display: block; width: 100%; margin-top: 0.5rem; font-size: 1rem; }
+    input, select, textarea { padding: 0.5rem; border-radius: 6px; border: 1px solid #ccc; }
+    .form-section { background: #ffffff; padding: 1rem; border-radius: 10px; margin-top: 1.5rem; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    button { margin-top: 1rem; padding: 0.7rem 1.5rem; background: #d60087; color: white; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-size: 1.1rem; }
   </style>
 </head>
 <body>
   <header>
     <h1>TD Confeitaria</h1>
-    <p>Cardápio por categorias</p>
+    <p>Monte seu pedido com praticidade 🍰</p>
   </header>
 
-  <div class="tabs">
-    <div class="tab active" onclick="showTab(0)">Piscininha</div>
-    <div class="tab" onclick="showTab(1)">Copos</div>
-    <div class="tab" onclick="showTab(2)">Tortinhas</div>
+  <h2>Selecione os produtos:</h2>
+  <div class="produto">
+    <label><input type="checkbox" class="item" data-nome="Piscininha Choconinho" data-valor="35"> Piscininha Choconinho - R$35,00</label>
+    <label><input type="checkbox" class="adicional" data-parent="Piscininha Choconinho" data-nome="Morango" data-valor="10"> + Morango (+R$10,00)</label>
+    <label><input type="checkbox" class="adicional" data-parent="Piscininha Choconinho" data-nome="Nutella extra" data-valor="15"> + Nutella extra (+R$15,00)</label>
   </div>
 
-  <div id="tab-0" class="content active">
-    <div class="produto">Piscininha Choconinho - R$35,00</div>
-    <div class="produto">Piscininha Brigadeiro - R$35,00</div>
+  <div class="produto">
+    <label><input type="checkbox" class="item" data-nome="Copo Kinder Bueno" data-valor="22"> Copo Kinder Bueno - R$22,00</label>
   </div>
 
-  <div id="tab-1" class="content">
-    <div class="produto">Copo Ninho com Morango - R$22,00</div>
-    <div class="produto">Copo Kinder Bueno - R$22,00</div>
+  <div class="produto">
+    <label><input type="checkbox" class="item" data-nome="Tortinha Ninho com Nutella" data-valor="13"> Tortinha Ninho com Nutella - R$13,00</label>
   </div>
 
-  <div id="tab-2" class="content">
-    <div class="produto">Tortinha Ninho com Nutella - R$13,00</div>
-    <div class="produto">Tortinha Brigadeiro - R$13,00</div>
-  </div>
-
-  <div class="form">
-    <label for="cep">CEP de entrega:</label>
-    <input type="text" id="cep" placeholder="Ex: 03344000">
-    <label for="pagamento">Forma de pagamento:</label>
+  <div class="form-section">
+    <h2>Seus dados:</h2>
+    <label>Nome:</label>
+    <input type="text" id="nome" required>
+    <label>Telefone para contato:</label>
+    <input type="text" id="telefone" required>
+    <label>CEP:</label>
+    <input type="text" id="cep" maxlength="8" onblur="buscarEndereco()">
+    <label>Rua:</label>
+    <input type="text" id="rua" disabled>
+    <label>Número:</label>
+    <input type="text" id="numero">
+    <label>Complemento:</label>
+    <input type="text" id="complemento">
+    <label>Bairro:</label>
+    <input type="text" id="bairro" disabled>
+    <label>Cidade:</label>
+    <input type="text" id="cidade" disabled>
+    <label>Forma de pagamento:</label>
     <select id="pagamento">
       <option value="Pix">Pix</option>
       <option value="Cartão de Crédito">Cartão de Crédito</option>
       <option value="Cartão de Débito">Cartão de Débito</option>
     </select>
-    <button onclick="finalizarPedido()">Enviar Pedido</button>
-    <div class="alerta" id="alerta"></div>
+    <button onclick="enviarPedido()">Enviar pedido no WhatsApp</button>
   </div>
 
   <script>
-    function showTab(index) {
-      const tabs = document.querySelectorAll(".tab");
-      const contents = document.querySelectorAll(".content");
-      tabs.forEach((tab, i) => {
-        tab.classList.toggle("active", i === index);
-        contents[i].classList.toggle("active", i === index);
-      });
+    function buscarEndereco() {
+      const cep = document.getElementById("cep").value;
+      if (cep.length !== 8) return;
+      fetch(`https://viacep.com.br/ws/${cep}/json/`)
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("rua").value = data.logradouro || "";
+          document.getElementById("bairro").value = data.bairro || "";
+          document.getElementById("cidade").value = data.localidade || "";
+        });
     }
 
-    async function finalizarPedido() {
-      const cep = document.getElementById('cep').value;
-      const pagamento = document.getElementById('pagamento').value;
-      const alerta = document.getElementById('alerta');
-      alerta.innerText = "";
+    function enviarPedido() {
+      const nome = document.getElementById("nome").value;
+      const telefone = document.getElementById("telefone").value;
+      const cep = document.getElementById("cep").value;
+      const rua = document.getElementById("rua").value;
+      const numero = document.getElementById("numero").value;
+      const complemento = document.getElementById("complemento").value;
+      const bairro = document.getElementById("bairro").value;
+      const cidade = document.getElementById("cidade").value;
+      const pagamento = document.getElementById("pagamento").value;
 
-      if (!cep || cep.length !== 8) {
-        alerta.innerText = "Digite um CEP válido (8 dígitos).";
+      let total = 0;
+      let itens = [];
+
+      document.querySelectorAll(".item:checked").forEach(item => {
+        const nome = item.dataset.nome;
+        const valor = parseFloat(item.dataset.valor);
+        total += valor;
+        let adicionais = [];
+        document.querySelectorAll(`.adicional[data-parent="${nome}"]:checked`).forEach(ad => {
+          adicionais.push(ad.dataset.nome);
+          total += parseFloat(ad.dataset.valor);
+        });
+        itens.push(`${nome}${adicionais.length ? " + " + adicionais.join(", ") : ""}`);
+      });
+
+      if (!nome || !telefone || !cep || !numero) {
+        alert("Por favor, preencha todos os campos obrigatórios.");
         return;
       }
 
-      const localLoja = [-23.559684, -46.563995];
-      try {
-        const response = await fetch(`https://nominatim.openstreetmap.org/search?postalcode=${cep}&country=Brazil&format=json`);
-        const data = await response.json();
-        if (data.length === 0) {
-          alerta.innerText = "CEP não encontrado.";
-          return;
-        }
+      const msg = `Olá! Gostaria de fazer um pedido na TD Confeitaria:%0A
+*Nome:* ${nome}%0A
+*Contato:* ${telefone}%0A
+*Endereço:* ${rua}, ${numero} ${complemento ? '- ' + complemento : ''}, ${bairro}, ${cidade}, CEP ${cep}%0A
+*Forma de pagamento:* ${pagamento}%0A
+*Itens:* ${itens.join(" | ")}%0A
+*Total:* R$${total.toFixed(2).replace(".", ",")}`;
 
-        const lat = parseFloat(data[0].lat);
-        const lon = parseFloat(data[0].lon);
-        const distancia = calcularDistancia(localLoja[0], localLoja[1], lat, lon);
-        if (distancia > 5) {
-          alerta.innerText = "Fora do raio de entrega (5km).";
-          return;
-        }
-
-        const mensagem = `Olá! Gostaria de fazer um pedido.
-Forma de pagamento: ${pagamento}
-CEP: ${cep}`;
-        const url = `https://wa.me/5511995726813?text=${encodeURIComponent(mensagem)}`;
-        window.open(url, '_blank');
-      } catch (e) {
-        alerta.innerText = "Erro ao verificar o CEP.";
-      }
-    }
-
-    function calcularDistancia(lat1, lon1, lat2, lon2) {
-      const R = 6371;
-      const dLat = (lat2 - lat1) * Math.PI / 180;
-      const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a = Math.sin(dLat/2) ** 2 +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                Math.sin(dLon/2) ** 2;
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-      return R * c;
+      window.open(`https://wa.me/5511995726813?text=${msg}`, "_blank");
     }
   </script>
 </body>
