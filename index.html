@@ -1,0 +1,69 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TD Confeitaria</title>
+  <link rel="icon" href="logo-192.png">
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #fff0f6; }
+    h1 { color: #d60087; }
+    .produto { margin: 1rem 0; padding: 1rem; background: white; border-radius: 10px; box-shadow: 0 0 5px #ccc; }
+    footer { text-align: center; margin-top: 2rem; color: #999; }
+  </style>
+</head>
+<body>
+  <h1>TD Confeitaria</h1>
+  <p>Monte seu pedido com praticidade 🍰</p>
+
+  <div class="produto">
+    <h3>Bolo Piscininha - Choconinho - R$35,00</h3>
+    <label><input type="checkbox" data-price="10"> + Morango (+R$10,00)</label><br>
+    <label><input type="checkbox" data-price="15"> + Nutella extra (+R$15,00)</label>
+  </div>
+
+  <div class="produto">
+    <h3>Copo Kinder Bueno - R$22,00</h3>
+  </div>
+
+  <div class="produto">
+    <h3>Tortinha Ninho com Nutella - R$13,00</h3>
+  </div>
+
+  <h3>Seus dados:</h3>
+  <input placeholder="Nome" id="nome"><br>
+  <input placeholder="Telefone" id="telefone"><br><br>
+
+  <h3>Total: R$<span id="total">0,00</span></h3>
+  <button onclick="enviarWhatsApp()">Enviar para WhatsApp</button>
+
+  <footer>TD Confeitaria • Cardápio Online v1.0.4 (sem PWA)</footer>
+
+  <script>
+    function calcularTotal() {
+      let total = 0;
+      document.querySelectorAll('input[type=checkbox]:checked').forEach(cb => {
+        total += Number(cb.dataset.price || 0);
+      });
+      total += 35 + 22 + 13; // valores fixos dos produtos
+      document.getElementById("total").textContent = total.toFixed(2).replace('.', ',');
+      return total;
+    }
+
+    document.querySelectorAll('input[type=checkbox]').forEach(cb => {
+      cb.addEventListener('change', calcularTotal);
+    });
+
+    function enviarWhatsApp() {
+      const nome = document.getElementById('nome').value;
+      const telefone = document.getElementById('telefone').value;
+      const total = calcularTotal().toFixed(2).replace('.', ',');
+      const msg = `Pedido de ${nome} (%2B55${telefone})%0ATotal: R$${total}`;
+      window.open(`https://wa.me/5511995726813?text=${msg}`, '_blank');
+    }
+
+    calcularTotal();
+  </script>
+</body>
+</html>
