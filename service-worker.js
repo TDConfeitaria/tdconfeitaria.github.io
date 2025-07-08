@@ -5,7 +5,10 @@ self.addEventListener('install', function(e) {
       return cache.addAll([
         '/',
         '/index.html',
-        '/logo.jpeg'
+        '/logo.jpeg',
+        '/manifest.json',
+        '/service-worker.js',
+        '/logo-192.png'
       ]);
     })
   );
