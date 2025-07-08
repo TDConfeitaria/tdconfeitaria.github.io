@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TD Confeitaria - Cardápio</title>
+  <link rel="manifest" href="manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+  </script>
+  <style>
+    body { font-family: Arial; background: #fff0f6; padding: 1rem; margin: 0; }
+    header { background: #d60087; color: white; padding: 1rem; text-align: center; }
+    h2 { color: #d60087; }
+    .produto { background: white; padding: 1rem; margin: 1rem 0; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    label, input, select, textarea { display: block; width: 100%; margin-top: 0.5rem; font-size: 1rem; }
+    input, select, textarea { padding: 0.5rem; border-radius: 6px; border: 1px solid #ccc; }
+    .form-section { background: #ffffff; padding: 1rem; border-radius: 10px; margin-top: 1.5rem; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    button { margin-top: 1rem; padding: 0.7rem 1.5rem; background: #d60087; color: white; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-size: 1.1rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>TD Confeitaria</h1>
+    <p>Monte seu pedido com praticidade 🍰</p>
+  </header>
+
+  <h2>Cardápio</h2>
+
+  <div class="produto">
+    <label><input type="checkbox" class="item" data-nome="Bolo Piscininha - Choconinho" data-valor="35"> Bolo Piscininha - Choconinho - R$35,00</label>
+    <label><input type="checkbox" class="adicional" data-parent="Bolo Piscininha - Choconinho" data-nome="Morango" data-valor="10"> + Morango (+R$10,00)</label>
+    <label><input type="checkbox" class="adicional" data-parent="Bolo Piscininha - Choconinho" data-nome="Nutella extra" data-valor="15"> + Nutella extra (+R$15,00)</label>
+  </div>
+
+  <div class="produto">
+    <label><input type="checkbox" class="item" data-nome="Copo Kinder Bueno" data-valor="22"> Copo Kinder Bueno - R$22,00</label>
+  </div>
+
+  <div class="produto">
+    <label><input type="checkbox" class="item" data-nome="Tortinha Ninho com Nutella" data-valor="13"> Tortinha Ninho com Nutella - R$13,00</label>
+  </div>
+
+  <div class="form-section">
+    <h2>Seus dados:</h2>
+    <label>Nome:</label>
+    <input type="text" id="nome" required>
+    <label>Telefone:</label>
+    <input type="text" id="telefone" required>
+    <label>CEP:</label>
+    <input type="text" id="cep" maxlength="8" onblur="buscarEndereco()">
+    <label>Rua:</label>
+    <input type="text" id="rua" disabled>
+    <label>Número:</label>
+    <input type="text" id="numero">
+    <label>Complemento:</label>
+    <input type="text" id="complemento">
+    <label>Bairro:</label>
+    <input type="text" id="bairro" disabled>
+    <label>Cidade:</label>
+    <input type="text" id="cidade" disabled>
+    <label>Forma de pagamento:</label>
+    <select id="pagamento">
+      <option value="Pix">Pix</option>
+      <option value="Cartão de Crédito">Cartão de Crédito</option>
+      <option value="Cartão de Débito">Cartão de Débito</option>
+    </select>
+    <button onclick="enviarPedido()">Enviar para WhatsApp</button>
+  </div>
+
+  <script>
+    function buscarEndereco() {
+      const cep = document.getElementById("cep").value;
+      if (cep.length !== 8) return;
+      fetch("https://viacep.com.br/ws/" + cep + "/json/")
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("rua").value = data.logradouro || "";
+          document.getElementById("bairro").value = data.bairro || "";
+          document.getElementById("cidade").value = data.localidade || "";
+        });
+    }
+
+    function enviarPedido() {
+      const nome = document.getElementById("nome").value;
+      const telefone = document.getElementById("telefone").value;
+      const cep = document.getElementById("cep").value;
+      const rua = document.getElementById("rua").value;
+      const numero = document.getElementById("numero").value;
+      const complemento = document.getElementById("complemento").value;
+      const bairro = document.getElementById("bairro").value;
+      const cidade = document.getElementById("cidade").value;
+      const pagamento = document.getElementById("pagamento").value;
+
+      let total = 0;
+      let itens = [];
+
+      document.querySelectorAll(".item:checked").forEach(item => {
+        const nomeItem = item.dataset.nome;
+        const valorItem = parseFloat(item.dataset.valor);
+        total += valorItem;
+        let adicionais = [];
+        document.querySelectorAll(`.adicional[data-parent="${nomeItem}"]:checked`).forEach(ad => {
+          adicionais.push(ad.dataset.nome);
+          total += parseFloat(ad.dataset.valor);
+        });
+        itens.push(`${nomeItem}${adicionais.length ? " + " + adicionais.join(", ") : ""}`);
+      });
+
+      if (!nome || !telefone || !cep || !numero) {
+        alert("Preencha todos os campos obrigatórios!");
+        return;
+      }
+
+      const msg = `Olá! Gostaria de fazer um pedido:%0A
+*Nome:* ${nome}%0A
+*Telefone:* ${telefone}%0A
+*Endereço:* ${rua}, ${numero} ${complemento}, ${bairro}, ${cidade}, CEP: ${cep}%0A
+*Forma de pagamento:* ${pagamento}%0A
+*Itens:* ${itens.join(" | ")}%0A
+*Total:* R$${total.toFixed(2).replace(".", ",")}`;
+
+      window.open(`https://wa.me/5511995726813?text=${msg}`, "_blank");
+    }
+  </script>
+
+<footer style="text-align:center; margin-top:2rem; color:#999;">
+  TD Confeitaria • Cardápio Online v1.0.3
+</footer>
+</body>
+</html>
