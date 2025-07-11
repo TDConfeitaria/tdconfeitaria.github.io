@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TD Confeitaria - Cardápio COMPLETO v5.2.0</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 960px; margin: auto; }
+    h1, h2 { color: #d44c84; }
+    .categoria { margin-top: 30px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+    .produto { margin: 10px 0; }
+    .adicional { margin-left: 20px; font-style: italic; }
+    #total { font-size: 20px; font-weight: bold; margin-top: 20px; color: #333; }
+    input[type="checkbox"] { margin-right: 5px; }
+  </style>
+  <script>
+    function preencherEndereco() {
+      const cep = document.getElementById('cep').value;
+      if (cep.length >= 8) {
+        document.getElementById('rua').value = 'Rua Gerada Automática';
+        document.getElementById('bairro').value = 'Bairro Exemplo';
+        document.getElementById('cidade').value = 'São Paulo';
+      }
+    }
+
+    function calcularTotal() {
+      let total = 0;
+      document.querySelectorAll('input[type=checkbox]:checked').forEach(c => total += parseFloat(c.value));
+      document.getElementById('total').innerText = 'Total: R$ ' + total.toFixed(2);
+    }
+  </script>
+</head>
+<body>
+  <h1>TD Confeitaria 🍰</h1>
+  <p>Monte seu pedido com praticidade!</p>
+
+  <div class="categoria"><h2>🍫 Bolos Piscininha</h2></div>
+  <div class="produto"><input type="checkbox" value="35" onchange="calcularTotal()"> Choconinho</div>
+  <div class="produto"><input type="checkbox" value="35" onchange="calcularTotal()"> Brigadeiro</div>
+  <div class="produto"><input type="checkbox" value="35" onchange="calcularTotal()"> Ninho</div>
+  <div class="produto"><input type="checkbox" value="35" onchange="calcularTotal()"> Duo</div>
+  <div class="produto"><input type="checkbox" value="35" onchange="calcularTotal()"> Cenoura</div>
+
+  <div class="adicional"><input type="checkbox" value="10" onchange="calcularTotal()"> + Morango / Uva</div>
+  <div class="adicional"><input type="checkbox" value="15" onchange="calcularTotal()"> + Nutella</div>
+
+  <div class="categoria"><h2>🍰 Bolos no Pote</h2></div>
+  <div class="produto"><input type="checkbox" value="15" onchange="calcularTotal()"> Ninho Nutella</div>
+  <div class="produto"><input type="checkbox" value="15" onchange="calcularTotal()"> Brigadeiro</div>
+  <div class="produto"><input type="checkbox" value="15" onchange="calcularTotal()"> Kinder</div>
+  <div class="produto"><input type="checkbox" value="15" onchange="calcularTotal()"> Prestígio</div>
+  <div class="produto"><input type="checkbox" value="15" onchange="calcularTotal()"> Cenoura</div>
+
+  <div class="categoria"><h2>❄️ Bolos Gelados</h2></div>
+  <div class="produto"><input type="checkbox" value="15" onchange="calcularTotal()"> Ninho com frutas vermelhas</div>
+  <div class="produto"><input type="checkbox" value="15" onchange="calcularTotal()"> Coco</div>
+  <div class="produto"><input type="checkbox" value="15" onchange="calcularTotal()"> Bem casado</div>
+  <div class="produto"><input type="checkbox" value="15" onchange="calcularTotal()"> Pistache</div>
+
+  <div class="categoria"><h2>🍓 Copos da Felicidade</h2></div>
+  <div class="produto"><input type="checkbox" value="22" onchange="calcularTotal()"> Kinder Bueno</div>
+  <div class="produto"><input type="checkbox" value="22" onchange="calcularTotal()"> Ninho Morango</div>
+  <div class="produto"><input type="checkbox" value="22" onchange="calcularTotal()"> Morango + Brownie + Nutella</div>
+  <div class="produto"><input type="checkbox" value="22" onchange="calcularTotal()"> Banoffe</div>
+
+  <div class="categoria"><h2>🍫 Tortinhas e Trufas</h2></div>
+  <div class="produto"><input type="checkbox" value="13" onchange="calcularTotal()"> Tortinha Ninho com Nutella</div>
+  <div class="produto"><input type="checkbox" value="13" onchange="calcularTotal()"> Tortinha Duo</div>
+  <div class="produto"><input type="checkbox" value="7" onchange="calcularTotal()"> Trufa Ninho com Nutella</div>
+  <div class="produto"><input type="checkbox" value="7" onchange="calcularTotal()"> Trufa Brigadeiro</div>
+
+  <div class="categoria"><h2>🍓 Frutas com Chocolate</h2></div>
+  <div class="produto"><input type="checkbox" value="18" onchange="calcularTotal()"> Morango com chocolate</div>
+  <div class="produto"><input type="checkbox" value="15" onchange="calcularTotal()"> Uva com chocolate</div>
+  <div class="produto"><input type="checkbox" value="15" onchange="calcularTotal()"> Banana com chocolate</div>
+
+  <div class="categoria"><h2>🍮 Brigadeirão, Pudins, Refrigerantes</h2></div>
+  <div class="produto"><input type="checkbox" value="12" onchange="calcularTotal()"> Brigadeirão 120g</div>
+  <div class="produto"><input type="checkbox" value="25" onchange="calcularTotal()"> Pudim 500g</div>
+  <div class="produto"><input type="checkbox" value="10" onchange="calcularTotal()"> Pudim 120g</div>
+  <div class="produto"><input type="checkbox" value="7" onchange="calcularTotal()"> Refrigerante (Coca/Fanta/Água)</div>
+
+  <div class="categoria"><h2>📋 Dados do Cliente</h2></div>
+  Nome: <input type="text" id="nome"><br>
+  Telefone: <input type="text" id="tel"><br>
+  CEP: <input type="text" id="cep" onblur="preencherEndereco()"><br>
+  Rua: <input type="text" id="rua"><br>
+  Número: <input type="text"><br>
+  Complemento: <input type="text"><br>
+  Bairro: <input type="text" id="bairro"><br>
+  Cidade: <input type="text" id="cidade"><br>
+
+  <div class="categoria"><h2>💳 Pagamento</h2></div>
+  <label><input type="radio" name="pgto" checked> Pix</label>
+  <label><input type="radio" name="pgto"> Crédito</label>
+  <label><input type="radio" name="pgto"> Débito</label>
+
+  <div id="total">Total: R$ 0.00</div>
+
+  <button onclick="alert('Pedido enviado para o WhatsApp!')">📲 Enviar Pedido</button>
+</body>
+</html>
