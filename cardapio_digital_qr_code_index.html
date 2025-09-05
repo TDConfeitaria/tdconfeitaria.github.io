@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cardápio • Sua Loja</title>
+  <meta name="theme-color" content="#111827" />
+  <style>
+    :root {
+      --bg: #0f172a;          /* slate-900 */
+      --panel: #111827;       /* gray-900 */
+      --muted: #cbd5e1;       /* slate-300 */
+      --text: #f8fafc;        /* slate-50 */
+      --brand: #22c55e;       /* green-500 */
+      --brand-600: #16a34a;
+      --chip: #1f2937;        /* gray-800 */
+      --card: #0b1223;        /* custom dark */
+      --accent: #38bdf8;      /* sky-400 */
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; background: linear-gradient(180deg, #0b1223 0%, #0f172a 40%, #0f172a 100%);
+      color: var(--text); font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+    header { display: grid; gap: 10px; margin: 10px 0 20px; }
+    .brand {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .logo {
+      width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, var(--accent), var(--brand));
+      box-shadow: 0 10px 20px rgba(34,197,94,.25), inset 0 0 20px rgba(56,189,248,.3);
+    }
+    h1 { margin: 0; font-size: 1.4rem; font-weight: 700; letter-spacing: .2px; }
+    .subtitle { color: var(--muted); font-size: .95rem; }
+
+    .toolbar { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 10px 0 18px; }
+    .search {
+      background: var(--panel); border: 1px solid #1f2937; border-radius: 14px; display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    }
+    .search input { flex: 1; background: transparent; border: 0; outline: none; color: var(--text); font-size: 1rem; }
+
+    .chips { display: grid; grid-auto-flow: column; grid-auto-columns: max-content; gap: 10px; overflow-x: auto; padding-bottom: 4px; }
+    .chip {
+      background: var(--chip); color: var(--muted); border: 1px solid #243042; padding: 8px 12px; border-radius: 999px; cursor: pointer; white-space: nowrap; font-size: .93rem;
+      transition: transform .08s ease, background .2s ease, color .2s ease, border-color .2s ease;
+    }
+    .chip:hover { transform: translateY(-1px); }
+    .chip.active { background: linear-gradient(135deg, #1f2937, #111827); color: var(--text); border-color: #334155; }
+
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
+    @media (max-width: 720px){ .grid { grid-template-columns: repeat(6, 1fr); } }
+    @media (max-width: 460px){ .grid { grid-template-columns: repeat(4, 1fr); } }
+
+    .card {
+      grid-column: span 4; background: radial-gradient(120% 120% at 10% 0%, rgba(34,197,94,.05), rgba(56,189,248,.05) 30%, rgba(17,24,39,.85) 72%);
+      border: 1px solid rgba(51,65,85,.55); border-radius: 18px; overflow: hidden; position: relative; transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(0,0,0,.35); }
+    .figure { aspect-ratio: 4/3; background: #0b1223; display: grid; place-items: center; }
+    .figure svg { opacity: .6; }
+    .badge {
+      position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, var(--brand), var(--accent)); color: #001b0c; font-weight: 800;
+      text-transform: uppercase; letter-spacing: .4px; font-size: .72rem; padding: 6px 8px; border-radius: 10px; box-shadow: 0 6px 16px rgba(34,197,94,.35);
+    }
+    .content { padding: 12px; display: grid; gap: 8px; }
+    .title { font-weight: 700; letter-spacing: .2px; }
+    .desc { color: var(--muted); font-size: .93rem; min-height: 2.6em; }
+    .priceRow { display: flex; align-items: center; justify-content: space-between; }
+    .price { font-weight: 800; font-size: 1.05rem; }
+    .cta {
+      background: linear-gradient(135deg, var(--brand), var(--accent)); color: #001b0c; border: 0; padding: 10px 12px; border-radius: 12px; font-weight: 800; cursor: pointer;
+    }
+    .cta:active { transform: translateY(1px); }
+
+    .empty { text-align: center; color: var(--muted); padding: 26px; border: 1px dashed #334155; border-radius: 14px; background: rgba(2,6,23,.35); }
+
+    footer { margin: 26px 0 50px; color: var(--muted); font-size: .9rem; text-align: center; }
+    .note { color: #9ca3af; font-size: .86rem; }
+
+    /* Modal */
+    dialog {
+      border: 1px solid #334155; border-radius: 16px; background: #0b1223; color: var(--text); padding: 0; width: min(92vw, 560px);
+    }
+    dialog::backdrop { background: rgba(2,6,23,.7); }
+    .modalHead { padding: 14px 16px; display:flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f2937; }
+    .modalBody { padding: 16px; display: grid; gap: 12px; }
+    .xbtn { background: transparent; border: 0; color: var(--muted); font-size: 1.2rem; cursor: pointer; }
+    .addon { display: flex; align-items: center; justify-content: space-between; background: #0a1326; border: 1px solid #1f2937; padding: 10px 12px; border-radius: 12px; }
+    .qty { display: inline-flex; align-items: center; gap: 8px; }
+    .qty button { width: 28px; height: 28px; border-radius: 8px; border: 1px solid #334155; background: #0a1326; color: var(--text); cursor: pointer; }
+    .modalFooter { display:flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-top: 1px solid #1f2937; }
+
+    /* Print (para quem quiser imprimir o cardápio) */
+    @media print {
+      .toolbar, .chips, .cta, dialog { display: none !important; }
+      .card { break-inside: avoid; border: 1px solid #cbd5e1; background: white; color: black; }
+      body { background: white; color: black; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1 id="storeTitle">Sua Loja – Cardápio</h1>
+          <div class="subtitle">Aponte a câmera para o QR Code nas mesas e confira as opções ✨</div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search" role="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 21l-4.3-4.3m1.3-5.2a7 7 0 11-14 0 7 7 0 0114 0z" stroke="#8aa0b5" stroke-width="2" stroke-linecap="round"/></svg>
+          <input id="q" placeholder="Buscar por item, ingrediente, preço…" autocomplete="off" />
+        </div>
+        <div id="chips" class="chips" aria-label="Categorias"></div>
+      </div>
+    </header>
+
+    <main>
+      <div id="grid" class="grid" aria-live="polite"></div>
+      <div id="empty" class="empty" hidden>Nada encontrado. Tente outro termo ou categoria.</div>
+    </main>
+
+    <footer>
+      <div class="note">Preços em reais (R$). Fotos ilustrativas. Consulte disponibilidade no balcão.</div>
+    </footer>
+  </div>
+
+  <dialog id="dlg">
+    <div class="modalHead">
+      <strong id="dlgTitle">Item</strong>
+      <button class="xbtn" onclick="dlg.close()" aria-label="Fechar">✕</button>
+    </div>
+    <div class="modalBody">
+      <div id="dlgDesc" class="desc"></div>
+      <div id="dlgAddons"></div>
+    </div>
+    <div class="modalFooter">
+      <div>
+        <div style="font-size:.85rem;color:var(--muted)">Total</div>
+        <div id="dlgTotal" class="price">—</div>
+      </div>
+      <button class="cta" onclick="dlg.close()">Fechar</button>
+    </div>
+  </dialog>
+
+  <script>
+    // =========================
+    // 1) CONFIGURE AQUI O MENU
+    // =========================
+    const LOJA = {
+      nome: "Doces Mooca",
+      destaque: "Promoções do dia",
+    };
+
+    const MENU = [
+      {
+        categoria: "Bolos Piscininha",
+        nome: "Choconinho",
+        descricao: "Massa de chocolate, ninho e Nutella. Finalizado com flakes.",
+        preco: 69.9,
+        imagem: "", // opcional: caminho da imagem (ex: img/choconinho.jpg)
+        destaque: true,
+        adicionais: [
+          { nome: "Morangos", preco: 10 },
+          { nome: "Nutella extra", preco: 15 }
+        ]
+      },
+      {
+        categoria: "Bolos Piscininha",
+        nome: "Brigadeiro",
+        descricao: "Massa de chocolate com brigadeiro nobre, finalizado com flakes.",
+        preco: 64.9,
+        imagem: "",
+        adicionais: [ { nome: "Morangos", preco: 10 } ]
+      },
+      {
+        categoria: "Cones Recheados",
+        nome: "Cone Ninho com Nutella",
+        descricao: "Casquinha crocante com brigadeiro de ninho e Nutella.",
+        preco: 9.9,
+        imagem: "",
+      },
+      {
+        categoria: "Sobremesas Especiais",
+        nome: "Taça da Felicidade",
+        descricao: "Camadas de brownie, brigadeiro e morangos frescos.",
+        preco: 29.9,
+        imagem: "",
+      },
+      {
+        categoria: "Bebidas",
+        nome: "Café Espresso",
+        descricao: "Café 100% arábica. Curto ou longo.",
+        preco: 7,
+        imagem: "",
+      },
+      {
+        categoria: "Bebidas",
+        nome: "Capuccino",
+        descricao: "Tradicional com toque de canela.",
+        preco: 12,
+        imagem: "",
+      },
+    ];
+
+    // =========================
+    // 2) LÓGICA DO CARDÁPIO
+    // =========================
+    const $ = sel => document.querySelector(sel);
+    const grid = $("#grid");
+    const chips = $("#chips");
+    const q = $("#q");
+    const empty = $("#empty");
+    const dlg = $("#dlg");
+    const dlgTitle = $("#dlgTitle");
+    const dlgDesc = $("#dlgDesc");
+    const dlgAddons = $("#dlgAddons");
+    const dlgTotal = $("#dlgTotal");
+
+    // Setup título
+    $("#storeTitle").textContent = `${LOJA.nome} – Cardápio`;
+
+    const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    const categorias = ["Tudo", ...Array.from(new Set(MENU.map(i => i.categoria)))];
+    let filtroCat = "Tudo";
+    let termo = "";
+
+    function svgPlaceholder(){
+      return `<svg width="60" height="60" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="3" ry="3" fill="#0f172a" stroke="#334155"/>
+        <path d="M4 16l4-4 3 3 4-5 5 6" stroke="#64748b" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <circle cx="9" cy="8" r="1.5" fill="#64748b"/>
+      </svg>`;
+    }
+
+    function makeChips(){
+      chips.innerHTML = '';
+      categorias.forEach(cat => {
+        const b = document.createElement('button');
+        b.className = 'chip' + (cat===filtroCat ? ' active' : '');
+        b.textContent = cat;
+        b.onclick = () => { filtroCat = cat; render(); };
+        chips.appendChild(b);
+      })
+    }
+
+    function match(i){
+      const termoOk = termo.trim().length
+        ? (i.nome+" "+i.descricao+" "+i.categoria).toLowerCase().includes(termo.toLowerCase())
+        : true;
+      const catOk = (filtroCat === 'Tudo') || (i.categoria === filtroCat);
+      return termoOk && catOk;
+    }
+
+    function card(item){
+      const el = document.createElement('article');
+      el.className = 'card';
+      el.innerHTML = `
+        ${item.destaque ? '<div class="badge">Destaque</div>' : ''}
+        <div class="figure">${item.imagem ? `<img src="${item.imagem}" alt="${item.nome}" style="width:100%;height:100%;object-fit:cover">` : svgPlaceholder()}</div>
+        <div class="content">
+          <div class="title">${item.nome}</div>
+          <div class="desc">${item.descricao || ''}</div>
+          <div class="priceRow">
+            <div class="price">${BRL.format(item.preco)}</div>
+            <button class="cta" aria-label="Ver detalhes de ${item.nome}">Detalhes</button>
+          </div>
+        </div>
+      `;
+      el.querySelector('.cta').onclick = () => openModal(item);
+      return el;
+    }
+
+    function openModal(item){
+      dlgTitle.textContent = item.nome;
+      dlgDesc.textContent = item.descricao || '';
+      let total = item.preco;
+      dlgAddons.innerHTML = '';
+
+      if(Array.isArray(item.adicionais) && item.adicionais.length){
+        item.adicionais.forEach((a, idx) => {
+          const row = document.createElement('div');
+          row.className = 'addon';
+          row.innerHTML = `
+            <div><strong>${a.nome}</strong><div class="note">+ ${BRL.format(a.preco)}</div></div>
+            <div class="qty" role="group" aria-label="Quantidade">
+              <button aria-label="Diminuir">−</button>
+              <span data-qtd>0</span>
+              <button aria-label="Aumentar">+</button>
+            </div>
+          `;
+          const [btnMenos, span, btnMais] = row.querySelectorAll('button, [data-qtd]');
+          let qtd = 0;
+          const renderQtd = () => { span.textContent = qtd; dlgTotal.textContent = BRL.format(total + (qtd * a.preco)); }
+          btnMais.addEventListener('click', ()=>{ qtd++; renderQtd(); });
+          btnMenos.addEventListener('click', ()=>{ if(qtd>0){ qtd--; renderQtd(); } });
+          dlgAddons.appendChild(row);
+        })
+      } else {
+        const p = document.createElement('div');
+        p.className = 'note';
+        p.textContent = 'Sem adicionais disponíveis para este item.';
+        dlgAddons.appendChild(p);
+      }
+      dlgTotal.textContent = BRL.format(total);
+      dlg.showModal();
+    }
+
+    function render(){
+      grid.innerHTML = '';
+      const items = MENU.filter(match);
+      if(!items.length){ empty.hidden = false; return; }
+      empty.hidden = true;
+      items.forEach(i => grid.appendChild(card(i)));
+      // Animação sutil
+      grid.querySelectorAll('.card').forEach((c, k)=>{
+        c.animate([
+          { transform: 'translateY(8px)', opacity: .001 },
+          { transform: 'translateY(0)', opacity: 1 }
+        ], { duration: 220, delay: 20*k, easing: 'cubic-bezier(.2,.7,.2,1)' })
+      })
+    }
+
+    makeChips();
+    render();
+
+    q.addEventListener('input', (e)=>{ termo = e.target.value; render(); });
+  </script>
+</body>
+</html>
